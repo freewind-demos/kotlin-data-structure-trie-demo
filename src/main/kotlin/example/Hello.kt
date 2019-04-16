@@ -1,20 +1,36 @@
 package example
 
-data class TreeNode(val data: String, val children: Set<TreeNode>)
+data class TrieNode(val data: Char?, val children: MutableSet<TrieNode>)
 
+fun applyItemToTrie(trie: TrieNode, item: String): TrieNode {
+    return trie.apply {
+        var currentNode = trie
+        item.toCharArray().forEach { char ->
+            val existNode = currentNode.children.find { it.data == char }
+            currentNode = existNode ?: run {
+                val newNode = TrieNode(char, mutableSetOf())
+                currentNode.children.add(newNode)
+                newNode
+            }
+        }
+    }
+}
+
+fun buildTrie(data: List<String>): TrieNode {
+    val root = TrieNode(null, mutableSetOf())
+    data.forEach { applyItemToTrie(root, it) }
+    return root
+}
 
 fun main(args: Array<String>) {
-    val tree = TreeNode("aaa", children = setOf(
-            TreeNode("bbb", children = setOf(
-                    TreeNode("ccc", emptySet())
-            )),
-            TreeNode("ddd", children = setOf(
-                    TreeNode("eee", emptySet()),
-                    TreeNode("fff", emptySet()),
-                    TreeNode("ggg", emptySet())
-            )),
-            TreeNode("hhh", children = emptySet())
-    ))
+    val data = listOf(
+            "hello",
+            "hi",
+            "heleee",
+            "key",
+            "kee"
+    )
 
-    println(tree)
+    val trie = buildTrie(data)
+    println(trie)
 }
